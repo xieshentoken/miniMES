@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生产流水线管理系统 - 生产记录</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/record.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="record-page" data-username="{{ username or '' }}" data-role="{{ role or '' }}" data-completed-status="{{ completed_status or '' }}">
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='image/company_logo.png') }}" alt="系统Logo" class="logo-image">
+                    <span>生产管理系统</span>
+                </div>
+                <button id="sidebarToggle" class="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="/main" class="nav-item{% if active_page == 'main' %} active{% endif %}">
+                    <i class="fas fa-home"></i>
+                    <span>主页看板</span>
+                </a>
+                {% if can_access_record %}
+                <a href="/record" class="nav-item{% if active_page == 'record' %} active{% endif %}">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>生产记录</span>
+                </a>
+                {% endif %}
+                {% if can_access_query %}
+                <a href="/query" class="nav-item{% if active_page == 'query' %} active{% endif %}">
+                    <i class="fas fa-search"></i>
+                    <span>数据查询</span>
+                </a>
+                {% endif %}
+                {% if can_access_dashboard or role == 'admin' %}
+                <a href="/dashboard" class="nav-item{% if active_page == 'dashboard' %} active{% endif %}">
+                    <i class="fas fa-chart-line"></i>
+                    <span>制程能力看板</span>
+                </a>
+                {% endif %}
+                
+                <!-- 管理员菜单 -->
+                <div id="adminMenu" class="nav-section" style="display: none;">
+                    <div class="nav-section-title">管理员功能</div>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-cog"></i>
+                        <span>系统设置</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-users"></i>
+                        <span>用户管理</span>
+                    </a>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="user-details">
+                        <div class="username" id="sidebarUsername">{{ username or '未登录' }}</div>
+                        <div class="user-role" id="sidebarUserRole">{{ role or '' }}</div>
+                    </div>
+                </div>
+                <a href="/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>退出</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 顶部导航栏 -->
+            <header class="top-header">
+                <div class="header-left">
+                    <h1>生产记录管理</h1>
+                    <div class="breadcrumb">记录 / 生产数据录入</div>
+                </div>
+                
+                <div class="header-right">
+                    <div class="user-menu">
+                        <div class="user-greeting">您好, <span id="headerUsername">{{ username or '用户' }}</span></div>
+                        <div class="notification-bell">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-count">3</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 主要内容 -->
+            <div class="content-area">
+                <!-- 批号选择区域 -->
+                <div class="batch-selection">
+                    <div class="section-header">
+                        <h2>选择批号</h2>
+                        <button id="createBatchBtn" class="btn btn-success">
+                            <i class="fas fa-plus"></i>
+                            新建批号
+                        </button>
+                    </div>
+                    
+                    <div class="batch-selector">
+                        <div class="form-group">
+                            <label for="batchSelect">选择现有批号</label>
+                            <select id="batchSelect">
+                                <option value="">请选择批号...</option>
+                                <!-- 批号选项将通过JS动态加载 -->
+                            </select>
+                        </div>
+
+                        <div class="batch-filter-panel">
+                            <div class="filter-group">
+                                <label for="batchFilterProduct">按产品名称筛选</label>
+                                <input type="text" id="batchFilterProduct" placeholder="输入产品名称关键字">
+                            </div>
+                            <div class="filter-group">
+                                <label for="batchFilterKeyword">按批号关键字筛选</label>
+                                <input type="text" id="batchFilterKeyword" placeholder="输入批号关键字">
+                            </div>
+                            <div class="filter-group">
+                                <label for="batchFilterSegment">按工序筛选</label>
+                                <select id="batchFilterSegment">
+                                    <option value="">所有工序</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="batch-info-card" id="batchInfoCard" style="display: none;">
+                            <div class="batch-info-header">
+                                <h3 id="selectedBatchNumber">批号</h3>
+                                <span class="batch-status" id="selectedBatchStatus">状态</span>
+                            </div>
+                            <div class="batch-info-body">
+                                <div class="info-row">
+                                    <span class="info-label">产品名称:</span>
+                                    <span id="selectedProductName">-</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">工艺段:</span>
+                                    <span id="selectedProcessSegment">-</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">关键字:</span>
+                                    <span id="selectedCompositeKey">-</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">创建时间:</span>
+                                    <span id="selectedCreateTime">-</span>
+                                </div>
+                            </div>
+                            <div class="segment-edit" id="segmentEditRow" style="display: none;">
+                                <label for="batchSegmentSelect">调整工段</label>
+                                <div class="segment-edit-controls">
+                                    <select id="batchSegmentSelect"></select>
+                                    <button id="updateSegmentBtn" class="btn btn-primary">
+                                        <i class="fas fa-location-arrow"></i>
+                                        更新工段
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="segment-edit status-edit" id="statusEditRow" style="display: none;">
+                                <label for="batchStatusSelect">更新状态</label>
+                                <div class="segment-edit-controls">
+                                    <select id="batchStatusSelect"></select>
+                                    <button id="updateStatusBtn" class="btn btn-primary">
+                                        <i class="fas fa-sync-alt"></i>
+                                        更新状态
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="batch-duplicate" id="batchDuplicateControls" style="display: none;">
+                                <div class="batch-duplicate-header">
+                                    <h4>另存为新批号</h4>
+                                    <p>修改批号或产品名称后创建一条新记录</p>
+                                </div>
+                                <div class="batch-duplicate-fields">
+                                    <input type="text" id="duplicateBatchNumber" placeholder="新批号">
+                                    <input type="text" id="duplicateProductName" placeholder="新产品名称">
+                                </div>
+                                <div class="batch-duplicate-actions">
+                                    <label for="duplicateCopyRecords" class="duplicate-copy-option">
+                                        <input type="checkbox" id="duplicateCopyRecords" checked>
+                                        <span>复制当前批号的记录数据</span>
+                                    </label>
+                                    <button id="duplicateBatchBtn" class="btn btn-primary">
+                                        <i class="fas fa-copy"></i>
+                                        另存为新记录
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="batch-delete" id="batchDeleteSection" style="display: none;">
+                                <div class="batch-delete-header">
+                                    <h4>删除批号记录</h4>
+                                    <p>按照产品、批号、工段与状态删除整段数据</p>
+                                </div>
+                                <div class="batch-delete-fields">
+                                    <select id="deleteProductSelect">
+                                        <option value="">选择产品名称...</option>
+                                    </select>
+                                    <select id="deleteBatchSelect">
+                                        <option value="">选择批号...</option>
+                                    </select>
+                                    <select id="deleteSegmentSelect">
+                                        <option value="">选择工段...</option>
+                                    </select>
+                                    <select id="deleteStatusSelect">
+                                        <option value="">选择状态...</option>
+                                    </select>
+                                    <button id="deleteSegmentBtn" class="btn btn-danger" disabled>
+                                        <i class="fas fa-trash"></i>
+                                        删除
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 记录标签页 -->
+                <div class="record-tabs">
+                    <div class="tab-headers">
+                        <button class="tab-header active" data-tab="material">
+                            <i class="fas fa-box-open"></i>
+                            物料记录
+                        </button>
+                        <button class="tab-header" data-tab="equipment">
+                            <i class="fas fa-cogs"></i>
+                            设备记录
+                        </button>
+                        <button class="tab-header" data-tab="quality">
+                            <i class="fas fa-clipboard-check"></i>
+                            品质记录
+                        </button>
+                    </div>
+                    
+                    <div class="tab-content">
+                        <!-- 物料记录标签页 -->
+                        <div id="materialTab" class="tab-pane active">
+                            <div class="tab-pane-header">
+                                <h3>配料投料记录</h3>
+                                <button id="addMaterialBtn" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i>
+                                    添加物料记录
+                                </button>
+                            </div>
+                            
+                            <div class="record-table-container">
+                                <table class="record-table" id="materialTable">
+                                    <thead>
+                                        <tr>
+                                            <th>物料编码</th>
+                                            <th>物料名称</th>
+                                            <th>重量</th>
+                                            <th>单位</th>
+                                            <th>供应商</th>
+                                            <th>批号</th>
+                                            <th>记录时间</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- 物料记录将通过JS动态加载 -->
+                                    </tbody>
+                                </table>
+                                
+                                <div id="materialEmpty" class="empty-state">
+                                    <i class="fas fa-box-open"></i>
+                                    <p>暂无物料记录</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 设备记录标签页 -->
+                        <div id="equipmentTab" class="tab-pane">
+                            <div class="tab-pane-header">
+                                <h3>设备运行记录</h3>
+                                <button id="addEquipmentBtn" class="btn btn-secondary">
+                                    <i class="fas fa-undo"></i>
+                                    清空表单
+                                </button>
+                            </div>
+
+                            <div class="inline-form-card">
+                                <form id="addEquipmentForm">
+                                    <input type="hidden" id="equipmentBatchId">
+
+                                    <div class="form-group">
+                                        <label for="equipmentCode">设备编码 *</label>
+                                        <select id="equipmentCode" name="equipmentCode" required></select>
+                                        <div class="form-hint" id="equipmentDefinitionInfo"></div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="equipmentName">设备名称 *</label>
+                                        <input type="text" id="equipmentName" name="equipmentName" required readonly>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="equipmentStartTime">开始时间 *</label>
+                                        <input type="datetime-local" id="equipmentStartTime" name="equipmentStartTime" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="equipmentEndTime">结束时间</label>
+                                        <input type="datetime-local" id="equipmentEndTime" name="equipmentEndTime">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="equipmentStatus">设备状态</label>
+                                        <select id="equipmentStatus" name="equipmentStatus"></select>
+                                    </div>
+
+                                    <div class="form-section">
+                                        <h3>运行参数</h3>
+                                        <div id="equipmentParameters"></div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="equipmentAttachments">附件</label>
+                                        <input type="file" id="equipmentAttachments" name="attachments" multiple accept="image/*,text/*">
+                                        <div class="form-hint">可上传设备工况照片、日志等文件</div>
+                                        <div id="equipmentAttachmentList" class="attachment-list"></div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="button" id="equipmentResetBtn" class="btn btn-secondary">重置</button>
+                                        <button type="submit" id="equipmentConfirmBtn" class="btn btn-primary">
+                                            <i class="fas fa-save"></i>
+                                            保存设备记录
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="record-table-container">
+                                <table class="record-table" id="equipmentTable">
+                                    <thead>
+                                        <tr>
+                                            <th>设备编码</th>
+                                            <th>设备名称</th>
+                                            <th>运行参数</th>
+                                            <th>开始时间</th>
+                                            <th>结束时间</th>
+                                            <th>状态</th>
+                                            <th>附件</th>
+                                            <th>记录时间</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- 设备记录将通过JS动态加载 -->
+                                    </tbody>
+                                </table>
+
+                                <div id="equipmentEmpty" class="empty-state">
+                                    <i class="fas fa-cogs"></i>
+                                    <p>暂无设备记录</p>
+                                </div>
+                            </div>
+
+                            <input type="file" id="equipmentRowAttachmentInput" multiple accept="image/*,text/*" style="display: none;">
+                        </div>
+                        
+                        <!-- 品质记录标签页 -->
+                        <div id="qualityTab" class="tab-pane">
+                            <div class="tab-pane-header">
+                                <h3>品质检测记录</h3>
+                                <button id="addQualityBtn" class="btn btn-secondary">
+                                    <i class="fas fa-undo"></i>
+                                    清空表单
+                                </button>
+                            </div>
+
+                            <div class="inline-form-card">
+                                <form id="addQualityForm">
+                                    <input type="hidden" id="qualityBatchId">
+
+                                    <div class="form-group">
+                                        <label for="qualityTestItem">检测项目 *</label>
+                                        <select id="qualityTestItem" name="qualityTestItem" required></select>
+                                        <div class="form-hint" id="qualityDefinitionInfo"></div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="qualityTestValue">检测值 *</label>
+                                        <input type="number" id="qualityTestValue" name="qualityTestValue" step="0.001" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="qualityUnit">单位</label>
+                                        <input type="text" id="qualityUnit" name="qualityUnit" readonly>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="qualityStandardMin">标准下限</label>
+                                        <input type="number" id="qualityStandardMin" name="qualityStandardMin" step="0.001">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="qualityStandardMax">标准上限</label>
+                                        <input type="number" id="qualityStandardMax" name="qualityStandardMax" step="0.001">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="qualityNotes">备注</label>
+                                        <textarea id="qualityNotes" name="qualityNotes" rows="3"></textarea>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="qualityAttachments">附件</label>
+                                        <input type="file" id="qualityAttachments" name="attachments" multiple accept="image/*,text/*">
+                                        <div class="form-hint">可上传检测报告等文件</div>
+                                        <div id="qualityAttachmentList" class="attachment-list"></div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="button" id="qualityResetBtn" class="btn btn-secondary">重置</button>
+                                        <button type="submit" id="qualityConfirmBtn" class="btn btn-primary">
+                                            <i class="fas fa-save"></i>
+                                            保存品质记录
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="record-table-container">
+                                <table class="record-table" id="qualityTable">
+                                    <thead>
+                                        <tr>
+                                            <th>检测项目</th>
+                                            <th>检测值</th>
+                                            <th>单位</th>
+                                            <th>标准范围</th>
+                                            <th>结果</th>
+                                            <th>检测时间</th>
+                                            <th>备注</th>
+                                            <th>附件</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- 品质记录将通过JS动态加载 -->
+                                    </tbody>
+                                </table>
+
+                                <div id="qualityEmpty" class="empty-state">
+                                    <i class="fas fa-clipboard-check"></i>
+                                    <p>暂无品质记录</p>
+                                </div>
+                            </div>
+
+                            <input type="file" id="qualityRowAttachmentInput" multiple accept="image/*,text/*" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新建批号模态框 -->
+    <div id="createBatchModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>新建批号</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="createBatchForm">
+                    <div class="form-group">
+                        <label for="batchNumber">批号 *</label>
+                        <input type="text" id="batchNumber" name="batchNumber" required>
+                        <div class="form-hint">提示：如批号重复，将通过工段区分，请确认后继续</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productName">产品名称 *</label>
+                        <input type="text" id="productName" name="productName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="processSegment">工艺段 *</label>
+                        <select id="processSegment" name="processSegment" required>
+                            <option value="">请选择工艺段</option>
+                            <!-- 工艺段选项将通过JS动态加载 -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary modal-cancel">取消</button>
+                        <button type="submit" class="btn btn-primary">创建批号</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加物料记录模态框 -->
+    <div id="addMaterialModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>添加物料记录</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addMaterialForm">
+                    <input type="hidden" id="materialBatchId">
+                    
+                    <div class="form-group">
+                        <label for="materialCode">物料编码 *</label>
+                        <select id="materialCode" name="materialCode" required></select>
+                        <div class="form-hint" id="materialDefinitionInfo"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="materialName">物料名称 *</label>
+                        <input type="text" id="materialName" name="materialName" required readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="materialWeight">重量 *</label>
+                        <input type="number" id="materialWeight" name="materialWeight" step="0.01" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="materialUnit">单位</label>
+                        <select id="materialUnit" name="materialUnit">
+                            <option value="kg">kg</option>
+                            <option value="g">g</option>
+                            <option value="吨">吨</option>
+                            <option value="升">升</option>
+                            <option value="个">个</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="materialSupplier">供应商</label>
+                        <input type="text" id="materialSupplier" name="materialSupplier" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="materialLotNumber">批号</label>
+                        <input type="text" id="materialLotNumber" name="materialLotNumber">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary modal-cancel">取消</button>
+                        <button type="button" id="materialConfirmBtn" class="btn btn-primary">确认保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 查看详情模态框 -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2 id="detailModalTitle">记录详情</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="detailModalContent">
+                    <!-- 详情内容将通过JS动态加载 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/record.js') }}"></script>
+</body>
+</html>

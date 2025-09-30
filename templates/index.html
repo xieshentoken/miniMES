@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生产流水线管理系统 - 主页</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body data-username="{{ username or '' }}" data-role="{{ role or '' }}" data-completed-status="{{ completed_status or '' }}">
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='image/company_logo.png') }}" alt="系统Logo" class="logo-image">
+                    <span>生产管理系统</span>
+                </div>
+                <button id="sidebarToggle" class="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="/main" class="nav-item{% if active_page == 'main' %} active{% endif %}">
+                    <i class="fas fa-home"></i>
+                    <span>主页看板</span>
+                </a>
+                {% if can_access_record %}
+                <a href="/record" class="nav-item{% if active_page == 'record' %} active{% endif %}">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>生产记录</span>
+                </a>
+                {% endif %}
+                {% if can_access_query %}
+                <a href="/query" class="nav-item{% if active_page == 'query' %} active{% endif %}">
+                    <i class="fas fa-search"></i>
+                    <span>数据查询</span>
+                </a>
+                {% endif %}
+                {% if can_access_dashboard or role == 'admin' %}
+                <a href="/dashboard" class="nav-item{% if active_page == 'dashboard' %} active{% endif %}">
+                    <i class="fas fa-chart-line"></i>
+                    <span>制程能力看板</span>
+                </a>
+                {% endif %}
+                
+                <!-- 管理员菜单 -->
+                <div id="adminMenu" class="nav-section" style="display: none;">
+                    <div class="nav-section-title">管理员功能</div>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-cog"></i>
+                        <span>系统设置</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-users"></i>
+                        <span>用户管理</span>
+                    </a>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="user-details">
+                        <div class="username" id="sidebarUsername">{{ username or '未登录' }}</div>
+                        <div class="user-role" id="sidebarUserRole">{{ role or '' }}</div>
+                    </div>
+                </div>
+                <a href="/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>退出</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 顶部导航栏 -->
+            <header class="top-header">
+                <div class="header-left">
+                    <h1>生产流水线状态总览</h1>
+                    <div class="breadcrumb">主页 / 批号状态</div>
+                </div>
+                
+                <div class="header-right">
+                    <div class="header-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalBatches">0</div>
+                            <div class="stat-label">总批号</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="activeBatches">0</div>
+                            <div class="stat-label">进行中</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="completedBatches">0</div>
+                            <div class="stat-label">已完成</div>
+                        </div>
+                    </div>
+                    <div class="pipeline-progress-wrapper">
+                        <span class="pipeline-progress-label">流水线整体完成度</span>
+                        <div class="pipeline-progress-bar">
+                            <div class="pipeline-progress-fill" id="pipelineProgressFill"></div>
+                        </div>
+                        <span class="pipeline-progress-value" id="pipelineProgressValue">0%</span>
+                    </div>
+                    
+                    <div class="user-menu">
+                        <div class="user-greeting">您好, <span id="headerUsername">{{ username or '用户' }}</span></div>
+                        <div class="notification-bell">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-count">3</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 主要内容 -->
+            <div class="content-area">
+                <!-- 操作栏 -->
+                <div class="action-bar">
+                    <div class="action-left">
+                        <button id="refreshBtn" class="btn btn-primary">
+                            <i class="fas fa-sync-alt"></i>
+                            刷新数据
+                        </button>
+                        <button id="createBatchBtn" class="btn btn-success" style="display: none;">
+                            <i class="fas fa-plus"></i>
+                            新建批号
+                        </button>
+                    </div>
+                    
+                    <div class="action-right">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="搜索批号或产品...">
+                        </div>
+                        <div class="filter-dropdown">
+                            <select id="statusFilter">
+                                <option value="all">所有状态</option>
+                                <option value="进行中">进行中</option>
+                                <option value="已完成">已完成</option>
+                                <option value="暂停">暂停</option>
+                                <option value="异常">异常</option>
+                            </select>
+                        </div>
+                        <div class="filter-dropdown">
+                            <select id="segmentFilter">
+                                <option value="all">所有工艺段</option>
+                                <!-- 工艺段选项将通过JS动态加载 -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 批号状态卡片 -->
+                <div class="batch-grid" id="batchGrid">
+                    <!-- 批号卡片将通过JS动态加载 -->
+                    <div class="loading-state">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>加载中...</p>
+                    </div>
+                </div>
+
+                <!-- 空状态 -->
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <i class="fas fa-clipboard-list"></i>
+                    <h3>暂无批号数据</h3>
+                    <p>当前没有批号记录，点击"新建批号"开始记录生产数据</p>
+                    <button id="emptyCreateBtn" class="btn btn-success" style="display: none;">
+                        <i class="fas fa-plus"></i>
+                        新建批号
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新建批号模态框 -->
+    <div id="createBatchModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>新建批号</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="createBatchForm">
+                    <div class="form-group">
+                        <label for="batchNumber">批号 *</label>
+                        <input type="text" id="batchNumber" name="batchNumber" required>
+                        <div class="form-hint">提示：如批号重复，将通过工段区分，请确认后继续</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productName">产品名称 *</label>
+                        <input type="text" id="productName" name="productName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="processSegment">工艺段 *</label>
+                        <select id="processSegment" name="processSegment" required>
+                            <option value="">请选择工艺段</option>
+                            <!-- 工艺段选项将通过JS动态加载 -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary modal-cancel">取消</button>
+                        <button type="submit" class="btn btn-primary">创建批号</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 批号详情模态框 -->
+    <div id="batchDetailModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>批号详情 - <span id="detailBatchNumber"></span></h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-tabs">
+                    <button class="tab-button active" data-tab="overview">概览</button>
+                    <button class="tab-button" data-tab="materials">物料记录</button>
+                    <button class="tab-button" data-tab="equipment">设备记录</button>
+                    <button class="tab-button" data-tab="quality">质量记录</button>
+                </div>
+                
+                <div class="segment-selector" id="detailSegmentSelector" style="display: none;">
+                    <label for="detailSegmentSelect">选择工段</label>
+                    <select id="detailSegmentSelect"></select>
+                </div>
+                
+                <div class="tab-content">
+                    <div id="overviewTab" class="tab-pane active">
+                        <!-- 概览内容将通过JS动态加载 -->
+                    </div>
+                    
+                    <div id="materialsTab" class="tab-pane">
+                        <!-- 物料记录内容将通过JS动态加载 -->
+                    </div>
+                    
+                    <div id="equipmentTab" class="tab-pane">
+                        <!-- 设备记录内容将通过JS动态加载 -->
+                    </div>
+                    
+                    <div id="qualityTab" class="tab-pane">
+                        <!-- 质量记录内容将通过JS动态加载 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

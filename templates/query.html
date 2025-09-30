@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生产流水线管理系统 - 数据查询</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/query.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="query-page role-{{ role or 'guest' }}" data-username="{{ username or '' }}" data-role="{{ role or '' }}">
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='image/company_logo.png') }}" alt="系统Logo" class="logo-image">
+                    <span>生产管理系统</span>
+                </div>
+                <button id="sidebarToggle" class="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="/main" class="nav-item{% if active_page == 'main' %} active{% endif %}">
+                    <i class="fas fa-home"></i>
+                    <span>主页看板</span>
+                </a>
+                {% if can_access_record %}
+                <a href="/record" class="nav-item{% if active_page == 'record' %} active{% endif %}">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>生产记录</span>
+                </a>
+                {% endif %}
+                {% if can_access_query %}
+                <a href="/query" class="nav-item{% if active_page == 'query' %} active{% endif %}">
+                    <i class="fas fa-search"></i>
+                    <span>数据查询</span>
+                </a>
+                {% endif %}
+                {% if can_access_dashboard or role == 'admin' %}
+                <a href="/dashboard" class="nav-item{% if active_page == 'dashboard' %} active{% endif %}">
+                    <i class="fas fa-chart-line"></i>
+                    <span>制程能力看板</span>
+                </a>
+                {% endif %}
+                
+                <!-- 管理员菜单 -->
+                <div id="adminMenu" class="nav-section" style="display: none;">
+                    <div class="nav-section-title">管理员功能</div>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-cog"></i>
+                        <span>系统设置</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-users"></i>
+                        <span>用户管理</span>
+                    </a>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="user-details">
+                        <div class="username" id="sidebarUsername">{{ username or '未登录' }}</div>
+                        <div class="user-role" id="sidebarUserRole">{{ role or '' }}</div>
+                    </div>
+                </div>
+                <a href="/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>退出</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 顶部导航栏 -->
+            <header class="top-header">
+                <div class="header-left">
+                    <h1>生产数据查询</h1>
+                    <div class="breadcrumb">查询 / 数据检索与分析</div>
+                </div>
+                
+                <div class="header-right">
+                    <div class="user-menu">
+                        <div class="user-greeting">您好, <span id="headerUsername">{{ username or '用户' }}</span></div>
+                        <div class="notification-bell">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-count">3</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 主要内容 -->
+            <div class="content-area">
+                <!-- 查询条件区域 -->
+                <div class="query-conditions">
+                    <div class="section-header">
+                        <h2>查询条件</h2>
+                        <div class="query-actions">
+                            <button id="resetBtn" class="btn btn-secondary">
+                                <i class="fas fa-redo"></i>
+                                重置条件
+                            </button>
+                            <button id="queryBtn" class="btn btn-primary">
+                                <i class="fas fa-search"></i>
+                                执行查询
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="conditions-grid">
+                        <!-- 基本条件 -->
+                        <div class="condition-group">
+                            <h3>基本条件</h3>
+                            <div class="form-group">
+                                <label for="batchNumber">批号</label>
+                                <input type="text" id="batchNumber" placeholder="输入批号或部分批号">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="productName">产品名称</label>
+                                <input type="text" id="productName" placeholder="输入产品名称">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="processSegment">工艺段</label>
+                                <select id="processSegment">
+                                    <option value="">所有工艺段</option>
+                                    <!-- 工艺段选项将通过JS动态加载 -->
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="dateRange">时间范围</label>
+                                <div class="date-range">
+                                    <input type="date" id="startDate">
+                                    <span>至</span>
+                                    <input type="date" id="endDate">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 物料条件 -->
+                        <div class="condition-group">
+                            <h3>物料条件</h3>
+                            <div class="form-group">
+                                <label for="materialCode">物料编码</label>
+                                <input type="text" id="materialCode" placeholder="输入物料编码">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="materialName">物料名称</label>
+                                <input type="text" id="materialName" placeholder="输入物料名称">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="supplier">供应商</label>
+                                <input type="text" id="supplier" placeholder="输入供应商名称">
+                            </div>
+                        </div>
+                        
+                        <!-- 设备条件 -->
+                        <div class="condition-group">
+                            <h3>设备条件</h3>
+                            <div class="form-group">
+                                <label for="equipmentCode">设备编码</label>
+                                <input type="text" id="equipmentCode" placeholder="输入设备编码">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="equipmentName">设备名称</label>
+                                <input type="text" id="equipmentName" placeholder="输入设备名称">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="equipmentStatus">设备状态</label>
+                                <select id="equipmentStatus">
+                                    <option value="">所有状态</option>
+                                    <option value="正常运行">正常运行</option>
+                                    <option value="故障">故障</option>
+                                    <option value="维护">维护</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- 品质条件 -->
+                        <div class="condition-group">
+                            <h3>品质条件</h3>
+                            <div class="form-group">
+                                <label for="testItem">检测项目</label>
+                                <input type="text" id="testItem" placeholder="输入检测项目">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="testResult">检测结果</label>
+                                <select id="testResult">
+                                    <option value="">所有结果</option>
+                                    <option value="合格">合格</option>
+                                    <option value="不合格">不合格</option>
+                                    <option value="待定">待定</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="valueRange">检测值范围</label>
+                                <div class="value-range">
+                                    <input type="number" id="minValue" placeholder="最小值" step="0.001">
+                                    <span>至</span>
+                                    <input type="number" id="maxValue" placeholder="最大值" step="0.001">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 查询结果区域 -->
+                <div class="query-results">
+                    <div class="results-header">
+                        <h2>查询结果</h2>
+                        <div class="results-actions">
+                            <div class="results-count">
+                                找到 <span id="resultsCount">0</span> 条记录
+                            </div>
+                            <button id="exportBtn" class="btn btn-success" disabled>
+                                <i class="fas fa-download"></i>
+                                导出CSV
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="results-container">
+                        <div class="results-loading" id="resultsLoading" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>查询中...</p>
+                        </div>
+                        
+                        <div class="results-empty" id="resultsEmpty">
+                            <i class="fas fa-search"></i>
+                            <h3>暂无查询结果</h3>
+                            <p>请设置查询条件并执行查询</p>
+                        </div>
+                        
+                        <div class="results-table-container" id="resultsTableContainer" style="display: none;">
+                            <div class="table-controls">
+                                <div class="table-search">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" id="tableSearch" placeholder="在结果中搜索...">
+                                </div>
+                                <div class="table-pagination">
+                                    <span>每页显示:</span>
+                                    <select id="pageSize">
+                                        <option value="10">10条</option>
+                                        <option value="25" selected>25条</option>
+                                        <option value="50">50条</option>
+                                        <option value="100">100条</option>
+                                    </select>
+                                    <div class="pagination-info">
+                                        <span id="paginationInfo">第 1 页，共 1 页</span>
+                                        <button id="prevPage" class="btn btn-secondary" disabled>
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                        <button id="nextPage" class="btn btn-secondary" disabled>
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="table-wrapper">
+                                <table class="results-table" id="resultsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>批号</th>
+                                            <th>产品名称</th>
+                                            <th>工艺段</th>
+                                            <th>状态</th>
+                                            <th>开始时间</th>
+                                            <th>结束时间</th>
+                                            <th>物料编码</th>
+                                            <th>物料名称</th>
+                                            <th>重量</th>
+                                            <th>物料附件</th>
+                                            <th>设备编码</th>
+                                            <th>设备名称</th>
+                                            <th>设备附件</th>
+                                            <th>检测项目</th>
+                                            <th>检测值</th>
+                                            <th>品质附件</th>
+                                            <th>结果</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- 查询结果将通过JS动态加载 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="chart-section" id="resultsChartSection" style="display: none;">
+                            <div class="section-header">
+                                <h2>图表分析</h2>
+                            </div>
+                            <div class="chart-controls">
+                                <div class="form-group">
+                                    <label for="chartType">图表类型</label>
+                                    <select id="chartType">
+                                        <option value="line">点线图</option>
+                                        <option value="bar">柱状图</option>
+                                        <option value="scatter">散点图</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="chartXAxis">X轴字段</label>
+                                    <select id="chartXAxis"></select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="chartYAxis">Y轴字段（1 至 2 列）</label>
+                                    <select id="chartYAxis" multiple size="6"></select>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" id="renderChartBtn" class="btn btn-primary">
+                                        <i class="fas fa-chart-line"></i>
+                                        绘制图表
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="chart-canvas">
+                                <canvas id="resultsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导出选项模态框 -->
+    <div id="exportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>导出选项</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="exportForm">
+                    <div class="form-group">
+                        <label for="exportFileName">文件名</label>
+                        <input type="text" id="exportFileName" value="生产数据查询结果" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="exportColumns">导出列</label>
+                        <div class="columns-selector">
+                            <div class="columns-list" id="columnsList">
+                                <!-- 列选项将通过JS动态加载 -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="exportScope">导出范围</label>
+                        <select id="exportScope">
+                            <option value="current">当前页数据</option>
+                            <option value="all" selected>全部查询结果</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary modal-cancel">取消</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-download"></i>
+                            导出CSV
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 记录详情模态框 -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>记录详情</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="detailModalContent">
+                    <!-- 详情内容将通过JS动态加载 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/query.js') }}"></script>
+</body>
+</html>

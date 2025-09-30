@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生产流水线管理系统 - 登录</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <noscript class="no-js-warning">为了完整体验，请启用浏览器的 JavaScript 功能。</noscript>
+    <main class="login-container" role="main">
+        <div class="login-left">
+            <div class="login-content">
+                <div class="logo-section">
+                    <div class="logo">
+                        <!-- <i class="fas fa-industry" aria-hidden="true"></i> -->
+                        <img src="{{ url_for('static', filename='image/company_logo_main.png') }}" alt="公司Logo" class="company-logo">
+                    </div>
+                    <h1>生产流水线管理系统</h1>
+                    <p>高效管理 • 精准控制 • 数据驱动</p>
+                </div>
+                
+                <div class="features" role="list" aria-label="系统功能亮点">
+                    <div class="feature-item" role="listitem">
+                        <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+                        <span>生产记录管理</span>
+                    </div>
+                    <div class="feature-item" role="listitem">
+                        <i class="fas fa-search" aria-hidden="true"></i>
+                        <span>数据查询分析</span>
+                    </div>
+                    <div class="feature-item" role="listitem">
+                        <i class="fas fa-chart-line" aria-hidden="true"></i>
+                        <span>制程能力看板</span>
+                    </div>
+                    <div class="feature-item" role="listitem">
+                        <i class="fas fa-download" aria-hidden="true"></i>
+                        <span>报表导出功能</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="login-right">
+            <div class="login-form-container">
+                <div class="form-header">
+                    <h2>用户登录</h2>
+                    <p>请输入您的账号和密码</p>
+                </div>
+                
+                <form id="loginForm" class="login-form" autocomplete="on" novalidate>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <i class="fas fa-user" aria-hidden="true"></i>
+                            <input type="text" id="username" name="username" placeholder="请输入用户名" aria-label="用户名" autocomplete="username" inputmode="text" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="input-group">
+                            <i class="fas fa-lock" aria-hidden="true"></i>
+                            <input type="password" id="password" name="password" placeholder="请输入密码" aria-label="密码" autocomplete="current-password" required>
+                            <button type="button" id="togglePassword" class="password-toggle" aria-label="显示或隐藏密码" aria-controls="password" aria-pressed="false">
+                                <i class="fas fa-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="errorMessage" class="error-message" role="alert" aria-live="assertive" style="display: none;">
+                        <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+                        <span id="errorText"></span>
+                    </div>
+                    
+                    <button type="submit" id="loginButton" class="login-button">
+                        <span id="loginText">登录</span>
+                        <div id="loginSpinner" class="spinner" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </button>
+                </form>
+                
+                <div class="login-footer">
+                    <div class="support-info" aria-label="账号说明">
+                        <h3>账号说明</h3>
+                        <p>系统账号由信息化部门统一分配。如需开通、权限调整或重置密码，请联系生产 IT 管理员。</p>
+                        <ul class="contact-list">
+                            <li><i class="fas fa-envelope" aria-hidden="true"></i><span>it-support@bimtglobal.com</span></li>
+                            <li><i class="fas fa-phone" aria-hidden="true"></i><span>内线 6200 / +86-400-000-0000</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="system-info">
+                        <p>版本 1.0.0 | 生产流水线管理系统</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+</body>
+</html>

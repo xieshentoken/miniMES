@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生产流水线管理系统 - 制程能力看板</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body data-username="{{ username or '' }}" data-role="{{ role or '' }}">
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='image/company_logo.png') }}" alt="系统Logo" class="logo-image">
+                    <span>生产管理系统</span>
+                </div>
+                <button id="sidebarToggle" class="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="/main" class="nav-item{% if active_page == 'main' %} active{% endif %}">
+                    <i class="fas fa-home"></i>
+                    <span>主页看板</span>
+                </a>
+                {% if can_access_record %}
+                <a href="/record" class="nav-item{% if active_page == 'record' %} active{% endif %}">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>生产记录</span>
+                </a>
+                {% endif %}
+                {% if can_access_query %}
+                <a href="/query" class="nav-item{% if active_page == 'query' %} active{% endif %}">
+                    <i class="fas fa-search"></i>
+                    <span>数据查询</span>
+                </a>
+                {% endif %}
+                {% if can_access_dashboard or role == 'admin' %}
+                <a href="/dashboard" class="nav-item{% if active_page == 'dashboard' %} active{% endif %}">
+                    <i class="fas fa-chart-line"></i>
+                    <span>制程能力看板</span>
+                </a>
+                {% endif %}
+                
+                <!-- 管理员菜单 -->
+                <div id="adminMenu" class="nav-section" style="display: none;">
+                    <div class="nav-section-title">管理员功能</div>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-cog"></i>
+                        <span>系统设置</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-users"></i>
+                        <span>用户管理</span>
+                    </a>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="user-details">
+                        <div class="username" id="sidebarUsername">{{ username or '未登录' }}</div>
+                        <div class="user-role" id="sidebarUserRole">{{ role or '' }}</div>
+                    </div>
+                </div>
+                <a href="/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>退出</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 顶部导航栏 -->
+            <header class="top-header">
+                <div class="header-left">
+                    <h1>制程能力看板</h1>
+                    <div class="breadcrumb">看板 / 生产过程分析与监控</div>
+                </div>
+                
+                <div class="header-right">
+                    <div class="dashboard-controls">
+                        <div class="time-filter">
+                            <label for="timeRange">时间范围:</label>
+                            <select id="timeRange">
+                                <option value="7">最近7天</option>
+                                <option value="30" selected>最近30天</option>
+                                <option value="90">最近90天</option>
+                                <option value="365">最近1年</option>
+                                <option value="custom">自定义</option>
+                            </select>
+                        </div>
+                        <div class="custom-date-range" id="customDateRange" style="display: none;">
+                            <input type="date" id="startDate">
+                            <span>至</span>
+                            <input type="date" id="endDate">
+                            <button id="applyDateRange" class="btn btn-primary">应用</button>
+                        </div>
+                        <button id="refreshBtn" class="btn btn-primary">
+                            <i class="fas fa-sync-alt"></i>
+                            刷新数据
+                        </button>
+                    </div>
+                    
+                    <div class="user-menu">
+                        <div class="user-greeting">您好, <span id="headerUsername">{{ username or '用户' }}</span></div>
+                        <div class="notification-bell">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-count">3</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 主要内容 -->
+            <div class="content-area">
+                <!-- KPI指标卡片 -->
+                <div class="kpi-cards">
+                    <div class="kpi-card">
+                        <div class="kpi-icon primary">
+                            <i class="fas fa-industry"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <div class="kpi-value" id="totalBatches">0</div>
+                            <div class="kpi-label">总批次数</div>
+                            <div class="kpi-trend">
+                                <span id="batchTrend" class="trend-up">+0%</span>
+                                <span>较上期</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-icon success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <div class="kpi-value" id="completionRate">0%</div>
+                            <div class="kpi-label">完成率</div>
+                            <div class="kpi-trend">
+                                <span id="completionTrend" class="trend-up">+0%</span>
+                                <span>较上期</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-icon warning">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <div class="kpi-value" id="avgCycleTime">0</div>
+                            <div class="kpi-label">平均周期(天)</div>
+                            <div class="kpi-trend">
+                                <span id="cycleTrend" class="trend-down">-0%</span>
+                                <span>较上期</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-icon danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <div class="kpi-value" id="defectRate">0%</div>
+                            <div class="kpi-label">不良率</div>
+                            <div class="kpi-trend">
+                                <span id="defectTrend" class="trend-down">-0%</span>
+                                <span>较上期</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图表区域 -->
+                <div class="chart-grid">
+                    <!-- 生产趋势图表 -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>生产趋势</h3>
+                            <div class="chart-actions">
+                                <button class="chart-action-btn active" data-chart="production" data-type="line">
+                                    <i class="fas fa-chart-line"></i>
+                                </button>
+                                <button class="chart-action-btn" data-chart="production" data-type="bar">
+                                    <i class="fas fa-chart-bar"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="productionChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- 质量合格率图表 -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>质量合格率</h3>
+                            <div class="chart-actions">
+                                <button class="chart-action-btn active" data-chart="quality" data-type="line">
+                                    <i class="fas fa-chart-line"></i>
+                                </button>
+                                <button class="chart-action-btn" data-chart="quality" data-type="bar">
+                                    <i class="fas fa-chart-bar"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="qualityChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- 工艺段分布 -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>工艺段分布</h3>
+                            <div class="chart-actions">
+                                <button class="chart-action-btn active" data-chart="process" data-type="doughnut">
+                                    <i class="fas fa-chart-pie"></i>
+                                </button>
+                                <button class="chart-action-btn" data-chart="process" data-type="bar">
+                                    <i class="fas fa-chart-bar"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="processChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- 不良品分析 -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>不良品分析</h3>
+                            <div class="chart-actions">
+                                <button class="chart-action-btn active" data-chart="defect" data-type="bar">
+                                    <i class="fas fa-chart-bar"></i>
+                                </button>
+                                <button class="chart-action-btn" data-chart="defect" data-type="pie">
+                                    <i class="fas fa-chart-pie"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="defectChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- 过程能力指数 -->
+                    <div class="chart-card full-width">
+                        <div class="chart-header">
+                            <h3>过程能力指数 (CPK)</h3>
+                            <div class="chart-actions">
+                                <select id="cpkMetric">
+                                    <option value="all">全部指标</option>
+                                    <!-- 指标选项将通过JS动态加载 -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="cpkChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- 设备效率分析 -->
+                    <div class="chart-card full-width">
+                        <div class="chart-header">
+                            <h3>设备效率分析 (OEE)</h3>
+                            <div class="chart-actions">
+                                <select id="oeeEquipment">
+                                    <option value="all">全部设备</option>
+                                    <!-- 设备选项将通过JS动态加载 -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="oeeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 数据表格区域 -->
+                <div class="data-tables">
+                    <div class="table-section">
+                        <h3>最近生产批次</h3>
+                        <div class="table-container">
+                            <table class="data-table" id="recentBatchesTable">
+                                <thead>
+                                    <tr>
+                                        <th>批号</th>
+                                        <th>产品名称</th>
+                                        <th>工艺段</th>
+                                        <th>状态</th>
+                                        <th>开始时间</th>
+                                        <th>结束时间</th>
+                                        <th>周期(天)</th>
+                                        <th>质量结果</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 最近批次数据将通过JS动态加载 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="table-section">
+                        <h3>质量指标统计</h3>
+                        <div class="table-container">
+                            <table class="data-table" id="qualityMetricsTable">
+                                <thead>
+                                    <tr>
+                                        <th>检测项目</th>
+                                        <th>总检测数</th>
+                                        <th>合格数</th>
+                                        <th>合格率</th>
+                                        <th>CPK</th>
+                                        <th>标准差</th>
+                                        <th>趋势</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 质量指标数据将通过JS动态加载 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 详情模态框 -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2 id="detailModalTitle">详情</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="detailModalContent">
+                    <!-- 详情内容将通过JS动态加载 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>
