@@ -1,0 +1,957 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+    line-height: 1.6;
+}
+
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* 侧边栏样式 - 与主页面相同 */
+.sidebar {
+    width: 260px;
+    background: #2c3e50;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    transition: width 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+}
+
+.sidebar-header {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #34495e;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.logo-image {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.sidebar-toggle {
+    background: none;
+    border: none;
+    color: #bdc3c7;
+    font-size: 18px;
+    cursor: pointer;
+    display: none;
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: 20px 0;
+}
+
+.nav-section {
+    margin-top: 20px;
+}
+
+.nav-section-title {
+    padding: 10px 20px;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #7f8c8d;
+    font-weight: 600;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: #bdc3c7;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.nav-item i {
+    margin-right: 10px;
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+}
+
+.nav-item:hover {
+    background: #34495e;
+    color: white;
+}
+
+.nav-item.active {
+    background: #3498db;
+    color: white;
+    border-left: 4px solid #2980b9;
+}
+
+.sidebar-footer {
+    padding: 20px;
+    border-top: 1px solid #34495e;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.user-avatar {
+    font-size: 36px;
+    margin-right: 10px;
+    color: #3498db;
+}
+
+.user-details .username {
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.user-details .user-role {
+    font-size: 12px;
+    color: #7f8c8d;
+}
+
+.logout-btn {
+    display: flex;
+    align-items: center;
+    color: #bdc3c7;
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.3s ease;
+}
+
+.logout-btn i {
+    margin-right: 8px;
+}
+
+.logout-btn:hover {
+    color: white;
+}
+
+/* 主内容区样式 */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.top-header {
+    background: white;
+    padding: 16px 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-left h1 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #2c3e50;
+}
+
+.breadcrumb {
+    font-size: 12px;
+    color: #7f8c8d;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-greeting {
+    margin-right: 0;
+    font-size: 13px;
+    color: #7f8c8d;
+}
+
+.notification-bell {
+    position: relative;
+    font-size: 20px;
+    color: #7f8c8d;
+    cursor: pointer;
+}
+
+body.record-page .notification-bell {
+    display: none;
+}
+
+.notification-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #e74c3c;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 内容区域样式 */
+.content-area {
+    flex: 1;
+    padding: 18px 24px 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    background: #f3f4f8;
+}
+
+/* 批号选择区域 */
+.batch-selection {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 1px 6px rgba(15, 23, 42, 0.08);
+    padding: 16px 20px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.section-header h2 {
+    font-size: 18px;
+    color: #1f2937;
+    margin: 0;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn i {
+    margin-right: 8px;
+}
+
+.btn-primary {
+    background: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+}
+
+.btn-success {
+    background: #27ae60;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #219653;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+}
+
+.btn-secondary {
+    background: #95a5a6;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #7f8c8d;
+}
+
+.btn-danger {
+    background: #e74c3c;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #c0392b;
+}
+
+.batch-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.batch-filter-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+}
+
+.batch-filter-panel .form-group label {
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.batch-filter-panel .form-group input,
+.batch-filter-panel .form-group select {
+    padding: 8px 12px;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #4b5563;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.batch-info-card {
+    background: #f9fbfd;
+    border-radius: 6px;
+    padding: 12px;
+    border-left: 3px solid #3498db;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.batch-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.batch-info-header h3 {
+    font-size: 16px;
+    color: #2c3e50;
+}
+
+.batch-status {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-active {
+    background: #d5f4e6;
+    color: #27ae60;
+}
+
+.status-completed {
+    background: #d6eaf8;
+    color: #3498db;
+}
+
+.status-paused {
+    background: #fdebd0;
+    color: #f39c12;
+}
+
+.status-error {
+    background: #fadbd8;
+    color: #e74c3c;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    gap: 8px;
+}
+
+.info-label {
+    color: #7f8c8d;
+    font-weight: 500;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    width: 100%;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    background: #f8f9fa;
+    border: 1px solid #ecf0f1;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 13px;
+}
+
+.detail-item label {
+    color: #7f8c8d;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.detail-item.full-row {
+    grid-column: 1 / -1;
+}
+
+.segment-edit {
+    margin-top: 15px;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.segment-edit label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.segment-edit-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.segment-edit-controls select {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #dfe4ea;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.segment-edit-controls .btn {
+    white-space: nowrap;
+}
+
+.batch-duplicate {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: #f4f8ff;
+    border: 1px dashed #b9d4f5;
+    border-radius: 6px;
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.batch-duplicate-header h4 {
+    margin: 0;
+    font-size: 15px;
+    color: #2c3e50;
+}
+
+.batch-duplicate-header p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: #57606f;
+}
+
+.batch-duplicate-fields {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.batch-duplicate-fields input {
+    flex: 1 1 200px;
+    padding: 8px 10px;
+    border: 1px solid #dfe4ea;
+    border-radius: 4px;
+    font-size: 14px;
+    background: #ffffff;
+}
+
+.batch-duplicate-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.duplicate-copy-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #2f3542;
+    cursor: pointer;
+}
+
+.duplicate-copy-option input {
+    width: 16px;
+    height: 16px;
+}
+
+.batch-duplicate .btn {
+    align-self: flex-start;
+}
+
+.batch-delete {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: #fff4f4;
+    border: 1px dashed #f5b7b1;
+    border-radius: 6px;
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.batch-delete-header h4 {
+    margin: 0;
+    font-size: 15px;
+    color: #c0392b;
+}
+
+.batch-delete-header p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: #7f8c8d;
+}
+
+.batch-delete-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.batch-delete-fields select {
+    flex: 1 1 180px;
+    padding: 8px 10px;
+    border: 1px solid #f5b7b1;
+    border-radius: 4px;
+    font-size: 14px;
+    background: #ffffff;
+}
+
+.batch-delete-fields .btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+/* 记录标签页样式 */
+.record-tabs {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 1px 6px rgba(15, 23, 42, 0.08);
+    overflow: hidden;
+}
+
+.tab-headers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 12px 0;
+    background: #f8f9fa;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.tab-header {
+    flex: 1 0 auto;
+    min-width: 160px;
+    padding: 8px 14px;
+    background: #f5f6fa;
+    border: none;
+    border-radius: 6px 6px 0 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #54617a;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.tab-header i {
+    font-size: 14px;
+}
+
+.tab-header:hover {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.tab-header.active {
+    background: #ffffff;
+    color: #3498db;
+    border-bottom: 2px solid #3498db;
+}
+
+.tab-content {
+    padding: 12px 16px 16px;
+}
+
+.tab-pane {
+    display: none;
+    padding: 0;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+.inline-form-card {
+    background: #f9fbfd;
+    border-bottom: 1px solid #edf1f5;
+    padding: 14px 16px;
+}
+
+.inline-form-card form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px 14px;
+    align-items: flex-end;
+}
+
+.inline-form-card .form-group {
+    margin-bottom: 0;
+}
+
+.inline-form-card .form-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 6px;
+}
+
+.tab-pane-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.tab-pane-header h3 {
+    font-size: 16px;
+    color: #2c3e50;
+}
+
+.record-table-container {
+    padding: 14px 16px;
+    position: relative;
+    min-height: 160px;
+}
+
+.record-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.record-table th {
+    background: #f8f9fa;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.record-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.record-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.record-table .actions {
+    display: flex;
+    gap: 5px;
+}
+
+.record-table .btn {
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 20px 16px;
+    color: #7f8c8d;
+}
+
+.empty-state i {
+    font-size: 40px;
+    margin-bottom: 15px;
+    color: #bdc3c7;
+}
+
+.empty-state p {
+    font-size: 14px;
+}
+
+/* 模态框样式 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    animation: modalFadeIn 0.3s ease;
+}
+
+.modal-content.large {
+    max-width: 800px;
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #ecf0f1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #7f8c8d;
+    cursor: pointer;
+}
+
+.modal-body {
+    padding: 20px;
+    max-height: calc(90vh - 120px);
+    overflow-y: auto;
+}
+
+.form-section {
+    margin-bottom: 16px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.form-section h3 {
+    margin-bottom: 15px;
+    color: #495057;
+    font-size: 14px;
+}
+
+.form-hint {
+    font-size: 0.5em; /* 或使用 14px, 75% 等 */
+    color: #6c757d; /* 通常提示文字会用灰色 */
+    font-style: italic;
+    margin-top: 0.25rem;
+}
+
+.parameter-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.parameter-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.parameter-item label {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #495057;
+}
+
+.parameter-item input, .parameter-item select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+    .batch-selector {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 70px;
+        overflow: hidden;
+    }
+    
+    .sidebar .logo span,
+    .sidebar .nav-item span,
+    .sidebar .user-details,
+    .sidebar .logout-btn span {
+        display: none;
+    }
+    
+    .sidebar .logo i {
+        margin-right: 0;
+        font-size: 28px;
+    }
+    
+    .sidebar .nav-item {
+        justify-content: center;
+        padding: 15px;
+    }
+    
+    .sidebar .nav-item i {
+        margin-right: 0;
+        font-size: 20px;
+    }
+    
+    .sidebar-toggle {
+        display: block;
+    }
+    
+    .top-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .header-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .tab-headers {
+        flex-direction: column;
+    }
+    
+    .tab-header {
+        justify-content: flex-start;
+    }
+    
+    .record-table {
+        display: block;
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .content-area {
+        padding: 15px;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 20px;
+    }
+    
+    .tab-pane-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+}
+
+/* 动画 */
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.record-table tbody tr {
+    animation: fadeIn 0.5s ease;
+}
