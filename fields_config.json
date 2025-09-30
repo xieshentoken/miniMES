@@ -1,0 +1,1094 @@
+{
+  "process_segments": [
+    "CG",
+    "FG",
+    "HS",
+    "SP",
+    "FT1",
+    "LP1",
+    "CA1",
+    "BP",
+    "AP",
+    "FT2",
+    "CA2",
+    "VC1",
+    "MP",
+    "FT3",
+    "CA3",
+    "VC",
+    "SE",
+    "EM",
+    "BH",
+    "PA"
+  ],
+  "materials": [
+    {
+      "code": "Total input",
+      "name": "总投料量",
+      "supplier": "Production department",
+      "unit": "kg",
+      "stock": 0,
+      "notes": "总计投料毛重",
+      "segments": [
+        "*"
+      ]
+    },
+    {
+      "code": "Total output",
+      "name": "总收料量",
+      "supplier": "Production department",
+      "unit": "kg",
+      "stock": 0,
+      "notes": "总计收料毛重",
+      "segments": [
+        "*"
+      ]
+    },
+    {
+      "code": "GV2409",
+      "name": "GV",
+      "supplier": "XX",
+      "unit": "kg",
+      "stock": 2311,
+      "notes": "使用前需50目筛分",
+      "segments": [
+        "CG"
+      ]
+    },
+    {
+      "code": "AL",
+      "name": "ETOH",
+      "supplier": "MC",
+      "unit": "kg",
+      "stock": 1600,
+      "notes": ">99.9%",
+      "segments": [
+        "CG",
+        "HS"
+      ]
+    },
+    {
+      "code": "SA",
+      "name": "SA",
+      "supplier": "-",
+      "unit": "kg",
+      "stock": 30,
+      "notes": "68-72",
+      "segments": [
+        "CG",
+        "FG"
+      ]
+    },
+    {
+      "code": "SK-D",
+      "name": "SK-D",
+      "supplier": "-",
+      "unit": "kg",
+      "stock": 30,
+      "notes": "99.5%",
+      "segments": [
+        "CG",
+        "FG"
+      ]
+    },
+    {
+      "code": "TL-C",
+      "name": "TL-C",
+      "supplier": "-",
+      "unit": "kg",
+      "stock": 30,
+      "notes": "99.5%",
+      "segments": [
+        "CG",
+        "FG"
+      ]
+    },
+    {
+      "code": "SLU",
+      "name": "SLU",
+      "supplier": "-",
+      "unit": "kg",
+      "stock": 0,
+      "notes": "5%",
+      "segments": [
+        "HS"
+      ]
+    },
+    {
+      "code": "BDR-YL-FS-250914",
+      "name": "FP",
+      "supplier": "DLXD",
+      "unit": "kg",
+      "stock": 100,
+      "notes": "D50:1.3um D90:3.2um D100:18.5um",
+      "segments": [
+        "FT*"
+      ]
+    }
+  ],
+  "equipment": [
+    {
+      "code": "BIMT-EQ-029",
+      "name": "砂磨机77#",
+      "parameters": [
+        {
+          "key": "main rotational speed",
+          "label": "主机转速",
+          "type": "number",
+          "unit": "rpm",
+          "required": false,
+          "default": "680"
+        },
+        {
+          "key": "pump rate",
+          "label": "泵速",
+          "type": "number",
+          "unit": "time per minute",
+          "required": true,
+          "default": "37"
+        },
+        {
+          "key": "temperature",
+          "label": "料温",
+          "type": "number",
+          "unit": "degree",
+          "required": false,
+          "default": "38"
+        },
+        {
+          "key": "powder",
+          "label": "功率",
+          "type": "number",
+          "unit": "kW",
+          "required": false,
+          "default": "52"
+        }
+      ],
+      "segments": [
+        "CG"
+      ]
+    },
+    {
+      "code": "BIMT-EQ-030",
+      "name": "砂磨机76#",
+      "parameters": [
+        {
+          "key": "main rotational speed",
+          "label": "主机转速",
+          "type": "number",
+          "unit": "rpm",
+          "required": false,
+          "default": "800"
+        },
+        {
+          "key": "pump rate",
+          "label": "泵速",
+          "type": "number",
+          "unit": "time per minute",
+          "required": true,
+          "default": "32"
+        },
+        {
+          "key": "temperature",
+          "label": "料温",
+          "type": "number",
+          "unit": "degree",
+          "required": false,
+          "default": "38"
+        },
+        {
+          "key": "powder",
+          "label": "功率",
+          "type": "number",
+          "unit": "kW",
+          "required": false,
+          "default": "50"
+        }
+      ],
+      "segments": [
+        "FG"
+      ]
+    },
+    {
+      "code": "BIMT-EQ-027",
+      "name": "砂磨机75#",
+      "parameters": [
+        {
+          "key": "main rotational speed",
+          "label": "主机转速",
+          "type": "number",
+          "unit": "rpm",
+          "required": false,
+          "default": "800"
+        },
+        {
+          "key": "pump rate",
+          "label": "泵速",
+          "type": "number",
+          "unit": "time per minute",
+          "required": true,
+          "default": "32"
+        },
+        {
+          "key": "temperature",
+          "label": "料温",
+          "type": "number",
+          "unit": "degree",
+          "required": false,
+          "default": "38"
+        },
+        {
+          "key": "powder",
+          "label": "功率",
+          "type": "number",
+          "unit": "kW",
+          "required": false,
+          "default": "50"
+        }
+      ],
+      "segments": [
+        "FG"
+      ]
+    },
+    {
+      "code": "BIMT-EQ-028",
+      "name": "砂磨机74#",
+      "parameters": [
+        {
+          "key": "main rotational speed",
+          "label": "主机转速",
+          "type": "number",
+          "unit": "rpm",
+          "required": false,
+          "default": "800"
+        },
+        {
+          "key": "pump rate",
+          "label": "泵速",
+          "type": "number",
+          "unit": "time per minute",
+          "required": true,
+          "default": "32"
+        },
+        {
+          "key": "temperature",
+          "label": "料温",
+          "type": "number",
+          "unit": "degree",
+          "required": false,
+          "default": "38"
+        },
+        {
+          "key": "powder",
+          "label": "功率",
+          "type": "number",
+          "unit": "kW",
+          "required": false,
+          "default": "50"
+        }
+      ],
+      "segments": [
+        "FG"
+      ]
+    },
+    {
+      "code": "BIMT-EQ-003",
+      "name": "气流粉碎机3",
+      "parameters": [
+        {
+          "key": "chamber pressure",
+          "label": "腔压",
+          "type": "number",
+          "unit": "bar",
+          "required": false,
+          "default": "-2"
+        },
+        {
+          "key": "下料关风机",
+          "label": "下料关风机",
+          "type": "number",
+          "unit": "Hz",
+          "required": true,
+          "default": "3"
+        },
+        {
+          "key": "螺杆喂料",
+          "label": "螺杆喂料",
+          "type": "number",
+          "unit": "Hz",
+          "required": false,
+          "default": "10"
+        },
+        {
+          "key": "分级电机",
+          "label": "分级电机",
+          "type": "number",
+          "unit": "Hz",
+          "required": false,
+          "default": "43"
+        },
+        {
+          "key": "引风机",
+          "label": "引风机",
+          "type": "number",
+          "unit": "Hz",
+          "required": false,
+          "default": "37"
+        }
+      ],
+      "segments": [
+        "AP"
+      ]
+    },
+    {
+      "code": "BIMT-EQ-004",
+      "name": "气流粉碎机4",
+      "parameters": [
+        {
+          "key": "chamber pressure",
+          "label": "腔压",
+          "type": "number",
+          "unit": "bar",
+          "required": false,
+          "default": "-2"
+        },
+        {
+          "key": "下料关风机",
+          "label": "下料关风机",
+          "type": "number",
+          "unit": "Hz",
+          "required": true,
+          "default": "3"
+        },
+        {
+          "key": "螺杆喂料",
+          "label": "螺杆喂料",
+          "type": "number",
+          "unit": "Hz",
+          "required": false,
+          "default": "10"
+        },
+        {
+          "key": "分级电机",
+          "label": "分级电机",
+          "type": "number",
+          "unit": "Hz",
+          "required": false,
+          "default": "43"
+        },
+        {
+          "key": "引风机",
+          "label": "引风机",
+          "type": "number",
+          "unit": "Hz",
+          "required": false,
+          "default": "37"
+        }
+      ],
+      "segments": [
+        "AP"
+      ]
+    },
+    {
+      "code": "BIMT-EQ-005",
+      "name": "气流粉碎机5",
+      "parameters": [
+        {
+          "key": "chamber pressure",
+          "label": "腔压",
+          "type": "number",
+          "unit": "bar",
+          "required": false,
+          "default": "-2"
+        },
+        {
+          "key": "下料关风机",
+          "label": "下料关风机",
+          "type": "number",
+          "unit": "Hz",
+          "required": true,
+          "default": "3"
+        },
+        {
+          "key": "螺杆喂料",
+          "label": "螺杆喂料",
+          "type": "number",
+          "unit": "Hz",
+          "required": false,
+          "default": "10"
+        },
+        {
+          "key": "分级电机",
+          "label": "分级电机",
+          "type": "number",
+          "unit": "Hz",
+          "required": false,
+          "default": "43"
+        },
+        {
+          "key": "引风机",
+          "label": "引风机",
+          "type": "number",
+          "unit": "Hz",
+          "required": false,
+          "default": "37"
+        }
+      ],
+      "segments": [
+        "AP"
+      ]
+    },
+    {
+      "code": "BIMT-EQ-006",
+      "name": "机械粉碎机",
+      "parameters": [
+        {
+          "key": "破碎电机",
+          "label": "破碎电机",
+          "type": "number",
+          "unit": "Hz",
+          "required": true,
+          "default": "15"
+        },
+        {
+          "key": "下料关风机",
+          "label": "下料关风机",
+          "type": "number",
+          "unit": "Hz",
+          "required": true,
+          "default": "1"
+        },
+        {
+          "key": "螺杆喂料",
+          "label": "螺杆喂料",
+          "type": "number",
+          "unit": "Hz",
+          "required": false,
+          "default": "1"
+        },
+        {
+          "key": "分级电机",
+          "label": "分级电机",
+          "type": "number",
+          "unit": "Hz",
+          "required": false,
+          "default": "45"
+        },
+        {
+          "key": "引风机",
+          "label": "引风机",
+          "type": "number",
+          "unit": "Hz",
+          "required": false,
+          "default": "25"
+        }
+      ],
+      "segments": [
+        "MP",
+        "AP"
+      ]
+    },
+    {
+      "code": "BIMT-EQ-001",
+      "name": "破碎系统A",
+      "parameters": [
+        {
+          "key": "Roll gap",
+          "label": "辊间隙",
+          "type": "number",
+          "unit": "mm",
+          "required": false,
+          "default": "0.3"
+        }
+      ],
+      "segments": [
+        "PA"
+      ]
+    },
+    {
+      "code": "BIMT-EQ-002",
+      "name": "破碎系统B",
+      "parameters": [
+        {
+          "key": "Roll gap",
+          "label": "辊间隙",
+          "type": "number",
+          "unit": "mm",
+          "required": false,
+          "default": "0.1"
+        }
+      ],
+      "segments": [
+        "BP"
+      ]
+    },
+    {
+      "code": "BIMT-EQ-007",
+      "name": "喷雾干燥机",
+      "parameters": [
+        {
+          "key": "Inlet temperature",
+          "label": "进风温度",
+          "type": "number",
+          "unit": "degree",
+          "required": false,
+          "default": "180"
+        },
+        {
+          "key": "Outlet temperature",
+          "label": "出风温度",
+          "type": "number",
+          "unit": "degree",
+          "required": false,
+          "default": "90"
+        },
+        {
+          "key": "Feed pump speed",
+          "label": "进料泵速",
+          "type": "number",
+          "unit": "Hz",
+          "required": false,
+          "default": "23"
+        },
+        {
+          "key": "Disperser disc speed",
+          "label": "雾化盘转速",
+          "type": "number",
+          "unit": "Hz",
+          "required": false,
+          "default": "200"
+        },
+        {
+          "key": "Cooling temperature",
+          "label": "冷冻水温度",
+          "type": "number",
+          "unit": "degree",
+          "required": false,
+          "default": "14"
+        }
+      ],
+      "segments": [
+        "SP"
+      ]
+    },
+    {
+      "code": "BIMT-EQ-036",
+      "name": "分散机",
+      "parameters": [
+        {
+          "key": "rotational speed",
+          "label": "转速",
+          "type": "number",
+          "unit": "rpm",
+          "required": false,
+          "default": "650"
+        },
+        {
+          "key": "Mixing time",
+          "label": "分散时间",
+          "type": "number",
+          "unit": "min",
+          "required": false,
+          "default": "40"
+        }
+      ],
+      "segments": [
+        "HS"
+      ]
+    },
+    {
+      "code": "BIMT-EQ-009",
+      "name": "混合机1",
+      "parameters": [
+        {
+          "key": "Rotational speed",
+          "label": "转速",
+          "type": "number",
+          "unit": "rpm",
+          "required": false,
+          "default": "260"
+        },
+        {
+          "key": "Mixing time",
+          "label": "搅拌时间",
+          "type": "number",
+          "unit": "min",
+          "required": false,
+          "default": "60"
+        }
+      ],
+      "segments": [
+        "FT*"
+      ]
+    },
+    {
+      "code": "BIMT-EQ-010",
+      "name": "混合机2",
+      "parameters": [
+        {
+          "key": "Rotational speed",
+          "label": "转速",
+          "type": "number",
+          "unit": "rpm",
+          "required": false,
+          "default": "260"
+        },
+        {
+          "key": "Mixing time",
+          "label": "搅拌时间",
+          "type": "number",
+          "unit": "min",
+          "required": false,
+          "default": "60"
+        }
+      ],
+      "segments": [
+        "FT*"
+      ]
+    },
+    {
+      "code": "BIMT-EQ-011",
+      "name": "混合机3",
+      "parameters": [
+        {
+          "key": "Rotational speed",
+          "label": "转速",
+          "type": "number",
+          "unit": "rpm",
+          "required": false,
+          "default": "260"
+        },
+        {
+          "key": "Mixing time",
+          "label": "搅拌时间",
+          "type": "number",
+          "unit": "min",
+          "required": false,
+          "default": "60"
+        }
+      ],
+      "segments": [
+        "FT*",
+        "VC",
+        "BH"
+      ]
+    },
+    {
+      "code": "BIMT-EQ-021",
+      "name": "混合机30L中",
+      "parameters": [
+        {
+          "key": "Rotational speed",
+          "label": "转速",
+          "type": "number",
+          "unit": "rpm",
+          "required": false,
+          "default": "900"
+        },
+        {
+          "key": "Mixing time",
+          "label": "搅拌时间",
+          "type": "number",
+          "unit": "min",
+          "required": false,
+          "default": "45"
+        }
+      ],
+      "segments": [
+        "FT*",
+        "VC*",
+        "BH"
+      ]
+    },
+    {
+      "code": "BIMT-EQ-022",
+      "name": "混合机30L内",
+      "parameters": [
+        {
+          "key": "Rotational speed",
+          "label": "转速",
+          "type": "number",
+          "unit": "rpm",
+          "required": false,
+          "default": "900"
+        },
+        {
+          "key": "Mixing time",
+          "label": "搅拌时间",
+          "type": "number",
+          "unit": "min",
+          "required": false,
+          "default": "45"
+        }
+      ],
+      "segments": [
+        "FT*"
+      ]
+    },
+    {
+      "code": "BIMT-EQ-008",
+      "name": "融合机",
+      "parameters": [
+        {
+          "key": "Rotational speed",
+          "label": "转速",
+          "type": "number",
+          "unit": "rpm",
+          "required": false,
+          "default": "630"
+        },
+        {
+          "key": "Mixing time",
+          "label": "混合时间",
+          "type": "number",
+          "unit": "min",
+          "required": false,
+          "default": "15"
+        }
+      ],
+      "segments": [
+        "LP*"
+      ]
+    },
+    {
+      "code": "BIMT-EQ-023",
+      "name": "融合机6L",
+      "parameters": [
+        {
+          "key": "Rotational speed",
+          "label": "转速",
+          "type": "number",
+          "unit": "rpm",
+          "required": false,
+          "default": "1500"
+        },
+        {
+          "key": "Mixing time",
+          "label": "混合时间",
+          "type": "number",
+          "unit": "min",
+          "required": false,
+          "default": "10"
+        }
+      ],
+      "segments": [
+        "LP*"
+      ]
+    },
+    {
+      "code": "BIMT-EQ-012",
+      "name": "辊道窑",
+      "parameters": [
+        {
+          "key": "O2 content",
+          "label": "进炉氧含量",
+          "type": "number",
+          "unit": "ppm",
+          "required": false,
+          "default": "0.4"
+        },
+        {
+          "key": "Maximun temperature",
+          "label": "最高温",
+          "type": "number",
+          "unit": "degree",
+          "required": false,
+          "default": "900"
+        },
+        {
+          "key": "Calcination time",
+          "label": "保温时间",
+          "type": "number",
+          "unit": "h",
+          "required": false,
+          "default": "4"
+        },
+        {
+          "key": "Heating time",
+          "label": "升温时间",
+          "type": "number",
+          "unit": "h",
+          "required": false,
+          "default": "16"
+        },
+        {
+          "key": "N2 flow rate",
+          "label": "氮气总流量",
+          "type": "number",
+          "unit": "L/min",
+          "required": false,
+          "default": "160"
+        }
+      ],
+      "segments": [
+        "CA*"
+      ]
+    },
+    {
+      "code": "BIMT-EQ-018",
+      "name": "箱式炉",
+      "parameters": [
+        {
+          "key": "O2 content",
+          "label": "进炉氧含量",
+          "type": "number",
+          "unit": "ppm",
+          "required": false,
+          "default": "0.4"
+        },
+        {
+          "key": "Maximun temperature",
+          "label": "最高温",
+          "type": "number",
+          "unit": "degree",
+          "required": false,
+          "default": "900"
+        },
+        {
+          "key": "Calcination time",
+          "label": "保温时间",
+          "type": "number",
+          "unit": "h",
+          "required": false,
+          "default": "4"
+        },
+        {
+          "key": "Heating time",
+          "label": "升温时间",
+          "type": "number",
+          "unit": "h",
+          "required": false,
+          "default": "16"
+        },
+        {
+          "key": "N2 flow rate",
+          "label": "氮气总流量",
+          "type": "number",
+          "unit": "L/min",
+          "required": false,
+          "default": "160"
+        }
+      ],
+      "segments": [
+        "CA*"
+      ]
+    }
+  ],
+  "quality": [
+    {
+      "item": "粒径D10",
+      "unit": "um",
+      "standard_value": 0,
+      "min": 1,
+      "max": 50,
+      "device": "Mastersizer3000",
+      "notes": "n介=1.33; n=3.5/2.4, k=0.1/0",
+      "segments": [
+        "*"
+      ]
+    },
+    {
+      "item": "粒径D50",
+      "unit": "um",
+      "standard_value": 1,
+      "min": 1,
+      "max": 50,
+      "device": "Mastersizer3000",
+      "notes": "n介=1.33; n=3.5/2.4, k=0.1/0",
+      "segments": [
+        "*"
+      ]
+    },
+    {
+      "item": "粒径D90",
+      "unit": "um",
+      "standard_value": 1,
+      "min": 1,
+      "max": 50,
+      "device": "Mastersizer3000",
+      "notes": "n介=1.33; n=3.5/2.4, k=0.1/0",
+      "segments": [
+        "*"
+      ]
+    },
+    {
+      "item": "粒径D100",
+      "unit": "um",
+      "standard_value": 1,
+      "min": 1,
+      "max": 50,
+      "device": "Mastersizer3000",
+      "notes": "n介=1.33; n=3.5/2.4, k=0.1/0",
+      "segments": [
+        "*"
+      ]
+    },
+    {
+      "item": "固含量",
+      "unit": "%",
+      "standard_value": 1,
+      "min": 0,
+      "max": 100,
+      "device": "Mass loss",
+      "notes": "120degree, 1h",
+      "segments": [
+        "CG",
+        "FG",
+        "HS"
+      ]
+    },
+    {
+      "item": "比表面积",
+      "unit": "m2/g",
+      "standard_value": 1.5,
+      "min": 0,
+      "max": 3000,
+      "device": "F-Sorb 2400CE",
+      "notes": "标样直接对比法",
+      "segments": [
+        "SP",
+        "AP",
+        "MP",
+        "VC",
+        "SE"
+      ]
+    },
+    {
+      "item": "振实密度",
+      "unit": "g/cm3",
+      "standard_value": 1.0,
+      "min": 0.7,
+      "max": 4,
+      "device": "BT 312",
+      "notes": "国标测试",
+      "segments": [
+        "SP",
+        "AP",
+        "MP",
+        "VC",
+        "SE"
+      ]
+    },
+    {
+      "item": "晶粒尺寸",
+      "unit": "A",
+      "standard_value": 1,
+      "min": 0,
+      "max": 200,
+      "device": "Aeris XRD",
+      "notes": "SGS",
+      "segments": [
+        "SP",
+        "AP",
+        "MP",
+        "VC",
+        "SE"
+      ]
+    },
+    {
+      "item": "放电容量",
+      "unit": "mAh/g",
+      "standard_value": 1800,
+      "min": 330,
+      "max": 3500,
+      "device": "LAND",
+      "notes": "0.005-1.5v, 0.1C",
+      "segments": [
+        "AP",
+        "MP",
+        "VC",
+        "SE"
+      ]
+    },
+    {
+      "item": "充电容量1.5v",
+      "unit": "mAh/g",
+      "standard_value": 1800,
+      "min": 330,
+      "max": 3500,
+      "device": "LAND",
+      "notes": "0.005-1.5v, 0.1C",
+      "segments": [
+        "AP",
+        "MP",
+        "VC",
+        "SE"
+      ]
+    },
+    {
+      "item": "充电容量0.8v",
+      "unit": "mAh/g",
+      "standard_value": 1700,
+      "min": 330,
+      "max": 3500,
+      "device": "LAND",
+      "notes": "0.005-1.5v, 0.1C",
+      "segments": [
+        "AP",
+        "MP",
+        "VC",
+        "SE"
+      ]
+    },
+    {
+      "item": "库伦效率1.5v",
+      "unit": "%",
+      "standard_value": 89.5,
+      "min": 88,
+      "max": 95,
+      "device": "LAND",
+      "notes": "0.005-1.5v, 0.1C",
+      "segments": [
+        "AP",
+        "MP",
+        "VC",
+        "SE"
+      ]
+    },
+    {
+      "item": "库伦效率0.8v",
+      "unit": "%",
+      "standard_value": 82,
+      "min": 75,
+      "max": 95,
+      "device": "LAND",
+      "notes": "0.005-1.5v, 0.1C",
+      "segments": [
+        "AP",
+        "MP",
+        "VC",
+        "SE"
+      ]
+    },
+    {
+      "item": "磁性物质",
+      "unit": "ppm",
+      "standard_value": 1.2,
+      "min": 0,
+      "max": 5,
+      "device": "ICP-OES",
+      "notes": "国标测试",
+      "segments": [
+        "AP",
+        "MP",
+        "VC",
+        "SE"
+      ]
+    },
+    {
+      "item": "水份",
+      "unit": "%",
+      "standard_value": 0.15,
+      "min": 0,
+      "max": 0.2,
+      "device": "Mass loss",
+      "notes": "国标测试",
+      "segments": [
+        "AP",
+        "MP",
+        "VC",
+        "SE"
+      ]
+    }
+  ]
+}
